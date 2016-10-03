@@ -1,0 +1,5 @@
+make commands:
+
+make sockets
+make fifos
+make clean
