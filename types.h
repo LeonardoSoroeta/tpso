@@ -10,13 +10,13 @@ typedef struct {
 		int totalExp;
 } Character;
 
-typedef struct {
+typedef struct __attribute__((__packed__)) {
 	int sender_pid;
 	Opcode opcode;
 	Character character;
 } Data;
 
-typedef struct {
+typedef struct __attribute__((__packed__)) {
 	char * payload;
 } Datagram;
 

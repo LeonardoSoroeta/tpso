@@ -11,4 +11,4 @@ fifos:
 	gcc -o loggingdaemon commlib.c daemonqueues.c daemonserver.c
 
 clean: 
-	rm -f client server database loggingdaemon
+	rm -f client server database loggingdaemon database.db
