@@ -2,7 +2,7 @@
 #ifndef _CONSTANTS_H
 #define _CONSTANTS_H
 
-#define CONNECTION_ADDRESS "/tmp/listener"
+typedef enum { false, true } bool;
 
 /*Game States*/
 #define CHAR_SELECTION 1
@@ -37,6 +37,5 @@
 #define SIZE 20
 #define KEY_LENGTH 3
 #define BUFF_SIZE 20
-
 
 #endif

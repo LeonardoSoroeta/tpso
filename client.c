@@ -17,6 +17,7 @@ char * sp = NULL;
 
 int session_state;
 
+char * address;
 Connection * connection;
 Data * data_from_server;
 Data * data_to_send;
@@ -26,9 +27,11 @@ int totalExp;
 
 void main(int argc, char *argv[]) {
 
-    printf("[client] connecting to server on address %s\n", CONNECTION_ADDRESS);
+    address = getaddress();
 
-    connection = comm_connect(CONNECTION_ADDRESS);
+    printf("[client] connecting to server on address %s\n", address);
+
+    connection = comm_connect(address);
 
     printf("[client] connection established\n");
 

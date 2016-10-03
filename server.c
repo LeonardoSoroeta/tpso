@@ -38,13 +38,31 @@ DBConnection * db_connection;
 
 int main(int argc, char *argv[]) {
 
-    char * address = "/tmp/listener";//getaddress();
+	printf("[server] initializing\n");
 
-    printf("[server] initializing\n");
+    char * address = getaddress();
+
+    signal(SIGINT, srv_sigRutine);
+
+    if (initLogin(false) == -1) {
+
+    	printf("Couldn´t create message queue for server\n");
+
+    	exit(1);
+
+    }
 
     semaphore_id = binary_semaphore_allocation (666, IPC_RMID);
 
 	listener = comm_listen(address);
+
+	if (listener == NULL) {
+
+		sndMessage("Couldn´t create listener", ERROR_TYPE);
+
+		exit(1);
+
+	}
 
 	printf("[server] awaiting connection requests\n");
 
@@ -143,5 +161,17 @@ void communicate_with_database() {
 	db_comm_disconnect(db_connection);
 
 	binary_semaphore_post(semaphore_id);
+
+}
+
+void srv_sigRutine(int sig) {
+
+    printf("\n");
+
+    printf("[session %d] session ended\n", getpid());
+
+    sndMessage("Server logged out by kill()", WARNING_TYPE);
+    
+    exit(1);
 
 }
