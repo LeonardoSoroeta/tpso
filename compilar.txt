@@ -1,0 +1,3 @@
+gcc -o server server.c commfifos.c marshalling.c semaphores.c
+gcc -o client client.c commfifos.c marshalling.c
+gcc -o database database.c sqlite3.c commsfifos.c marshalling.c semaphores.c -lpthread -ldl
