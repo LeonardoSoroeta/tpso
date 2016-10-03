@@ -48,18 +48,24 @@ Connection * comm_connect(char * address) {
     unlink(client_outgoing);
 
     if (mknod(client_incoming, S_IFIFO | 0666, 0) == -1) {
-      perror("Couldn´t create client incoming named pipe. Error");
-      return NULL;
+
+        return NULL;
+
     }
     
     if (mknod(client_outgoing, S_IFIFO | 0666, 0) == -1) {
-      perror("Couldn´t create client outgoing named pipe. Error");
-      return NULL;
+
+        return NULL;
+
     }
 
     listener_fd = open(address, O_WRONLY);
 
-    write(listener_fd, &connectionRequest, sizeof(ConnectionRequest));
+    if(write(listener_fd, &connectionRequest, sizeof(ConnectionRequest)) == -1) {
+
+        return NULL;
+
+    }
 
     close(listener_fd);
 
@@ -67,6 +73,12 @@ Connection * comm_connect(char * address) {
 
     connection->incoming_fd = open(client_incoming, O_RDONLY);
     connection->outgoing_fd = open(client_outgoing, O_WRONLY);
+
+    if(connection->outgoing_fd == -1 || connection->incoming_fd == -1) {
+
+        return NULL;
+
+    }
 
     return connection;
 
@@ -81,8 +93,9 @@ Listener * comm_listen(char * address) {
     unlink(address);
 
     if (mknod(address, S_IFIFO | 0666, 0) == -1) {
-      perror("Couldn´t create server private named pipe. Error");
+
       return NULL;
+
     }
 
     strcpy(listener->address, address);
@@ -102,8 +115,12 @@ Connection * comm_accept(Listener * listener) {
 
     listener_fd = open(listener->address, O_RDONLY);
 
-    read(listener_fd, &connectionRequest, sizeof(ConnectionRequest));
+    if(read(listener_fd, &connectionRequest, sizeof(ConnectionRequest)) == -1) {
 
+        return NULL;
+
+    }
+    
     close(listener_fd);
 
     sprintf(client_incoming, "/tmp/client_%d_incoming", connectionRequest.requester_pid);
@@ -111,6 +128,12 @@ Connection * comm_accept(Listener * listener) {
 
     connection->outgoing_fd = open(client_incoming, O_WRONLY);
     connection->incoming_fd = open(client_outgoing, O_RDONLY);
+
+    if(connection->outgoing_fd == -1 || connection->incoming_fd == -1) {
+
+        return NULL;
+
+    }
 
     return connection;
 

@@ -48,18 +48,29 @@ DBConnection * db_comm_connect(char * address) {
     unlink(client_outgoing);
 
     if (mknod(client_incoming, S_IFIFO | 0666, 0) == -1) {
-      perror("Couldn´t create client incoming named pipe. Error");
-      return NULL;
+
+        return NULL;
     }
     
     if (mknod(client_outgoing, S_IFIFO | 0666, 0) == -1) {
-      perror("Couldn´t create client outgoing named pipe. Error");
-      return NULL;
+
+        return NULL;
+
     }
 
     listener_fd = open(address, O_WRONLY);
 
-    write(listener_fd, &db_connectionRequest, sizeof(DBConnectionRequest));
+    if(listener_fd == -1) {
+
+        return NULL;
+
+    }
+
+    if(write(listener_fd, &db_connectionRequest, sizeof(DBConnectionRequest)) == -1) {
+
+        return NULL;
+
+    }
 
     close(listener_fd);
 
@@ -67,6 +78,12 @@ DBConnection * db_comm_connect(char * address) {
 
     db_connection->incoming_fd = open(client_incoming, O_RDONLY);
     db_connection->outgoing_fd = open(client_outgoing, O_WRONLY);
+
+    if(db_connection->outgoing_fd == -1 || db_connection->incoming_fd == -1) {
+
+        return NULL;
+
+    }
 
     return db_connection;
 
@@ -81,8 +98,9 @@ DBListener * db_comm_listen(char * address) {
     unlink(address);
 
     if (mknod(address, S_IFIFO | 0666, 0) == -1) {
-      perror("Couldn´t create server private named pipe. Error");
-      return NULL;
+
+        return NULL;
+
     }
 
     strcpy(db_listener->address, address);
@@ -102,7 +120,17 @@ DBConnection * db_comm_accept(DBListener * db_listener) {
 
     listener_fd = open(db_listener->address, O_RDONLY);
 
-    read(listener_fd, &db_connectionRequest, sizeof(DBConnectionRequest));
+    if(listener_fd == -1) {
+
+        return NULL;
+
+    }
+
+    if(read(listener_fd, &db_connectionRequest, sizeof(DBConnectionRequest)) == -1) {
+
+        return NULL;
+
+    }
 
     close(listener_fd);
 
@@ -111,6 +139,12 @@ DBConnection * db_comm_accept(DBListener * db_listener) {
 
     db_connection->outgoing_fd = open(client_incoming, O_WRONLY);
     db_connection->incoming_fd = open(client_outgoing, O_RDONLY);
+
+    if(db_connection->outgoing_fd == -1 || db_connection->incoming_fd == -1) {
+
+        return NULL;
+
+    }
 
     return db_connection;
 

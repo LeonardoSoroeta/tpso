@@ -33,14 +33,17 @@ Connection * comm_connect(char * address) {
     len = strlen(remote.sun_path) + sizeof(remote.sun_family);
 
     if ((socket_fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
-        perror("Couldn´t create socket. Error");
+
         return NULL;
+
     }
 
     if ((connect(socket_fd, (struct sockaddr *)&remote, len)) == -1) {
+
         close(socket_fd);
-        perror("Couldn´t connect to server. Error");
+
         return NULL;
+        
     }
 
     connection = malloc(sizeof(Connection));
@@ -61,22 +64,25 @@ Listener * comm_listen(char * address) {
     strcpy(local.sun_path, address);
     len = strlen(local.sun_path) + sizeof(local.sun_family);
 
-    if ((socket_fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1){
-        perror("Couldn´t create socket. Error");
+    if ((socket_fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+
         return NULL;
+
     }
 
     unlink(local.sun_path);
 
     if (bind(socket_fd, (struct sockaddr *)&local, len) == -1) {
+
         close(socket_fd);
-        perror("Bind failed. Error");
+
         return NULL;
     }
 
     if (listen(socket_fd, MAXQ_SIZE) == -1) {
+
         close(socket_fd);
-        perror("Listen failed. Error");
+
         return NULL;
     }
 
@@ -97,8 +103,9 @@ Connection * comm_accept(Listener * listener) {
     len = sizeof(struct sockaddr_un);
 
     if ((socket_fd = accept(listener->listener_fd,  (struct sockaddr *)&remote, (socklen_t*)&len)) == -1) {
-        perror("Couldn´t accept connection from listener. Error");
+
         return NULL;
+
     }
 
     connection = malloc(sizeof(Connection));
