@@ -23,6 +23,7 @@ void communicate_with_database();
 char * getaddress();
 
 int session_ended = 0;
+int client_playing = 1;
 
 int semaphore_id;
 
@@ -39,6 +40,7 @@ DBConnection * db_connection;
 int main(int argc, char *argv[]) {
 
 	printf("[server] initializing\n");
+	sndMessage("initializing server", INFO_TYPE);
 
     char * address = getaddress();
 
@@ -46,7 +48,7 @@ int main(int argc, char *argv[]) {
 
     if (initLogin(false) == -1) {
 
-    	printf("Couldn´t create message queue for server\n");
+    	printf("Couldn´t create message queue for logging daemon\n");
 
     	exit(1);
 
@@ -58,17 +60,26 @@ int main(int argc, char *argv[]) {
 
 	if (listener == NULL) {
 
-		sndMessage("Couldn´t create listener", ERROR_TYPE);
+		sndMessage("couldn´t create listener", ERROR_TYPE);
 
 		exit(1);
 
 	}
 
 	printf("[server] awaiting connection requests\n");
+	sndMessage("ready to receive connection requests", INFO_TYPE);
 
 	while(1) {
 
 		connection = comm_accept(listener);
+
+		if (connection == NULL) {
+
+			sndMessage("couldn't accept connection from client", ERROR_TYPE);
+
+			exit(1);
+
+		}
 
 		int newpid = fork();
 
@@ -87,6 +98,7 @@ int main(int argc, char *argv[]) {
 void newSession(Connection * connection) {
 
 	printf("[session %d] new client session started\n", getpid());
+	sndMessage("new client session started", INFO_TYPE);
 
 	while (1) {
 
@@ -114,6 +126,12 @@ void server_process_data() {
 
 		communicate_with_database();
 
+		if(data_to_client->opcode == NO_ERROR) {
+
+			client_playing = 1;
+
+		}
+
 	} else if(data_from_client->opcode == CREATE_CHARACTER) {
 
 		communicate_with_database();
@@ -129,15 +147,19 @@ void server_process_data() {
 	} else if(data_from_client->opcode == EXIT) {
 
 		printf("[session %d] session ended\n", getpid());
+		sndMessage("server session ended", INFO_TYPE);
 
+		client_playing = 0;
 		session_ended = 1;
 
 	} else if(data_from_client->opcode == EXIT_AND_LOGOUT) {
 
 		printf("[session %d] session ended\n", getpid());
+		sndMessage("server session ended", INFO_TYPE);
 
 		communicate_with_database();
 
+		client_playing = 0;
 		session_ended = 1;
 
 	} else {
@@ -154,6 +176,14 @@ void communicate_with_database() {
 
 	db_connection = db_comm_connect("/tmp/database_channel");
 
+	if(db_connection == NULL) {
+
+		sndMessage("couldn't connect to database", ERROR_TYPE);
+
+		exit(1);
+
+	}
+
 	db_sendData(db_connection, data_from_client);
 
 	data_to_client = db_receiveData(db_connection);
@@ -169,6 +199,14 @@ void srv_sigRutine(int sig) {
     printf("\n");
 
     printf("[session %d] session ended\n", getpid());
+
+    if(client_playing == 1) {
+
+    	data_from_client->opcode = EXIT_AND_LOGOUT;
+
+    	communicate_with_database();
+
+    }
 
     sndMessage("Server logged out by kill()", WARNING_TYPE);
     

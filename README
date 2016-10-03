@@ -1,3 +1,6 @@
+run database before running server
+run server before running client
+
 make commands:
 
 make sockets
