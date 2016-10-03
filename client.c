@@ -27,7 +27,7 @@ int totalExp;
 
 void main(int argc, char *argv[]) {
 
-    address = getaddress();
+    address = getaddress("SV");
 
     printf("[client] connecting to server on address %s\n", address);
 

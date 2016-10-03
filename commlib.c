@@ -5,15 +5,19 @@
 #include "constants.h"
 
 
-char * getaddress() {
+char * getaddress(char * alias) {
+
+	FILE * file;
+
+	char buffer1[BUFF_SIZE];
+
+	char buffer2[BUFF_SIZE];
 
 	char * line;
 
-	char buffer[BUFF_SIZE];
+	char * aux;
 
 	size_t len=0;
-
-	FILE * file;
 
 	file = fopen("commconfig.txt", "r");
 
@@ -21,17 +25,39 @@ char * getaddress() {
 
 		rewind(file);
 
+		aux = (char *) malloc(strlen("Address") + strlen(alias) + 1);
+
+		strcpy(aux, "Address");
+
+		strcat(aux, alias);
+
+		//printf("%s\n", aux);
+
 		while ((getline(&line, &len, file)) != -1) {
 
-	        if (sscanf(line, "Address : %s", buffer)>0) {
+			//printf("%s\n", line);
 
-	        	char * string = malloc(strlen(buffer) +1);
-	        	strcpy(string, buffer);
-	        	return string;
-	        }
-		}
-	}
-	return NULL;
+	        sscanf(line, "%s : %s", buffer1, buffer2);
+	        
+	        if (strcmp(buffer1, aux) == 0) {
+				char * string = malloc(strlen(buffer2) +1);
+	        		strcpy(string, buffer2);
+	        		free(aux);
+	        		return string;
+	        	}	        
+    
+	    }
+
+	    printf("That alias does not exist as a address-value in commconfig.txt\n");
+
+    }
+
+    else {
+    	printf("commconfig.txt couldn´t be opened\n");
+		exit(1);
+
+    }
+
 }
 
 unsigned int getkey(char * alias) {

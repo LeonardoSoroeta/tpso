@@ -1,5 +1,7 @@
-Address : /tmp/listening_channel
+Only key or addresses with format "key/address : value" will be supported.
+
+AddressSV : /tmp/listening_channel
 KeySHM : CCCC00
 KeyQ1 : BBBB00
 KeyQ2 : BBBB10
-
+AddressDBSV : /tmp/database_channel

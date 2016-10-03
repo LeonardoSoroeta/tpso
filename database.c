@@ -33,7 +33,7 @@ int main(void) {
     
     initialize_table();
 
-    db_listener = db_comm_listen("/tmp/database_channel");
+    db_listener = db_comm_listen(getaddress("DBSV"));
 
     semaphore_id = binary_semaphore_allocation (666, IPC_RMID);
 
@@ -112,7 +112,7 @@ void process_data() {
 
     else if(data->opcode == DELETE_CHARACTER) {
 
-        printf("[database] processing EXP_UP request from server session %d\n", data->sender_pid);
+        printf("[database] processing DELETE_CHARACTER request from server session %d\n", data->sender_pid);
 
         delete_char();
         

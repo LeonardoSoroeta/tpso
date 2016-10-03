@@ -14,10 +14,10 @@ typedef enum { false, true } bool;
 #define DELETE_CHARACTER 4
 #define EXP_UP 14
 
-#define CHAR_ALREADY_EXISTS 1
-#define CHAR_DOESNT_EXIST 2
-#define CHAR_SELECT_SUCCESFUL 3
-#define CHAR_BUSY 4 
+#define CHAR_ALREADY_EXISTS 20
+#define CHAR_DOESNT_EXIST 21
+#define CHAR_SELECT_SUCCESFUL 22
+#define CHAR_BUSY 23
 #define NO_ERROR 500
 
 #define EXIT 200

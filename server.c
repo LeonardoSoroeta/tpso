@@ -23,7 +23,6 @@ void communicate_with_database();
 char * getaddress();
 
 int session_ended = 0;
-int client_playing = 1;
 
 int semaphore_id;
 
@@ -42,7 +41,7 @@ int main(int argc, char *argv[]) {
 	printf("[server] initializing\n");
 	sndMessage("initializing server", INFO_TYPE);
 
-    char * address = getaddress();
+    char * address = getaddress("SV");
 
     signal(SIGINT, srv_sigRutine);
 
@@ -126,12 +125,6 @@ void server_process_data() {
 
 		communicate_with_database();
 
-		if(data_to_client->opcode == NO_ERROR) {
-
-			client_playing = 1;
-
-		}
-
 	} else if(data_from_client->opcode == CREATE_CHARACTER) {
 
 		communicate_with_database();
@@ -149,7 +142,6 @@ void server_process_data() {
 		printf("[session %d] session ended\n", getpid());
 		sndMessage("server session ended", INFO_TYPE);
 
-		client_playing = 0;
 		session_ended = 1;
 
 	} else if(data_from_client->opcode == EXIT_AND_LOGOUT) {
@@ -159,12 +151,7 @@ void server_process_data() {
 
 		communicate_with_database();
 
-		client_playing = 0;
 		session_ended = 1;
-
-	} else {
-
-		printf("[session %d] error: unknown operation requested from client\n", getpid());
 
 	}
 
@@ -174,7 +161,7 @@ void communicate_with_database() {
 
 	binary_semaphore_wait(semaphore_id);
 
-	db_connection = db_comm_connect("/tmp/database_channel");
+	db_connection = db_comm_connect(getaddress("DBSV"));
 
 	if(db_connection == NULL) {
 
@@ -196,17 +183,7 @@ void communicate_with_database() {
 
 void srv_sigRutine(int sig) {
 
-    printf("\n");
-
     printf("[session %d] session ended\n", getpid());
-
-    if(client_playing == 1) {
-
-    	data_from_client->opcode = EXIT_AND_LOGOUT;
-
-    	communicate_with_database();
-
-    }
 
     sndMessage("Server logged out by kill()", WARNING_TYPE);
     

@@ -1,5 +1,6 @@
 run database before running server
-run server before running client
+run loggingdaemon before running server
+run server before running clients
 
 make commands:
 
