@@ -183,8 +183,6 @@ void communicate_with_database() {
 
 void srv_sigRutine(int sig) {
 
-    printf("[session %d] session ended\n", getpid());
-
     sndMessage("Server logged out by kill()", WARNING_TYPE);
     
     exit(1);

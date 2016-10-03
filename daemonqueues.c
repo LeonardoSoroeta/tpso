@@ -19,6 +19,18 @@ Message.mtype:
 #include "daemon.h"
 #include "types.h"
 
+int initLogin(bool);
+int dSrv_initLogin();
+int other_initLogin();
+int create_queue();
+int sndMessage(char *, int);
+int rcvMessage(int);
+int rcv_InfoMessage();
+int rcv_WarningMessage();
+int rcv_ErrorMessage();
+char * typetoString(long);
+void printMessage();
+
 struct Message
 {
 	long mtype;
@@ -29,8 +41,6 @@ struct Message
 Message msg;
 
 bool is_dSrv;
-
-// queues variables
 
 int qmessage_in, qmessage_out;
 
