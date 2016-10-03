@@ -1,5 +1,0 @@
-Address : /tmp/listening_channel
-KeySHM : CCCC00
-KeyQ1 : BBBB00
-KeyQ2 : BBBB10
-

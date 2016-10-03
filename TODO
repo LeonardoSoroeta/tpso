@@ -1,8 +1,0 @@
-*Indicar si la base de datos sincroniza o no. Si no sincroniza, el servidor maestro sincroniza al resto para acceder.
-
-*Conexiones:
--Intentar que en las situaciones extremas de server-cliente las fifos y los sockets tengan el comportamiento lo mas similar posible.
--Cuando se tiene un cliente conectado y el server, si se finaliza el proceso del server tambien el del cliente, arreglarlo. Hice
-un handling de error en sendData pero parece que no es la solución.
--Si no hay serve conectado y se inicia el cliente, el cliente se bloquea y no se desbloquea nunca mas. En estos casos deberían pasar 
-alguna de estas dos cosas: o el cliente se bloquea y cuando se conecta el server se desbloquea, o se hace un exit en el cliente cuando no hay server. 
